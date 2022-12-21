@@ -7,6 +7,9 @@ package org.mockito.internal.stubbing.answers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.RETURNS_DEFAULTS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,18 @@ public class CallsRealMethodsTest {
                 new InvocationBuilder().method("booleanReturningMethod").toInvocation();
         assertThat(new CallsRealMethods().answer(abstractMethod))
                 .isEqualTo(RETURNS_DEFAULTS.answer(abstractMethod));
+    }
+
+    @Test
+    public void should_verify_method_when_calling_default_interface_method() throws Throwable {
+        // given
+        InterfaceWithDefaults spy = spy(InterfaceWithDefaults.class);
+
+        // when
+        spy.callDefault();
+
+        // then
+        verify(spy).call();
     }
 
     @Test
@@ -50,5 +65,12 @@ public class CallsRealMethodsTest {
         // when
         new CallsRealMethods().validateFor(invocationOnClass);
         // then no exception is thrown
+    }
+
+    private static interface InterfaceWithDefaults {
+        boolean call();
+        default boolean callDefault() {
+            return call();
+        }
     }
 }
